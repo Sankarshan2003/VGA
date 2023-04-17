@@ -94,11 +94,17 @@ int main( void )
   TA1CCTL1=CCIE;
   TA1CCR2=387;
   TA1CCTL2=CCIE;
-
+  P2DIR|=(BIT3+BIT4);
   __bis_SR_register(GIE);
   while(1){
-
-  }
+      while(TA1R<=320&&TA0R<=600)
+      {
+          P2OUT|=BIT3;
+          P2OUT|=BIT4;
+      }
+      P2OUT&=~BIT3;
+      P2OUT&=~BIT4;
+ }
  return 0;
 }
 
