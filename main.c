@@ -11,7 +11,7 @@
   Front porch 1 lines
   Sync pulse 4 lines
   Back porch 23 lines
-  Whole frame 628 lines
+  Whole frame 632 lines
   Info From Datasheet:
   Timer1A CLK i/p on P3.7
 */
