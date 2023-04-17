@@ -16,7 +16,7 @@
   Timer1A CLK i/p on P3.7
 */
 #include "msp430.h"
-
+int k=0;
 //ISRs:
 #pragma vector = TIMER1_A0_VECTOR
 __interrupt void Timer1_TAIFG(void)
@@ -34,16 +34,19 @@ case TA1IV_TAIFG:
     break;
 case TA1IV_TACCR1:
    if(i==0){
-       CCR1=336;
+       TA1CCR1=336;
        i++;
+       k=0;
    }
    else{
    P1OUT&=~BIT2;
-   i--;
+   k=1;
    }
  break;
  case TA1IV_TACCR2:
    P1OUT|=BIT2;
+   TA1CCR1=320;
+   i--;
 break;
  }
 }
@@ -55,12 +58,24 @@ __interrupt void TimerA1ISR(void)
 #pragma vector=TIMER0_A1_VECTOR
 __interrupt void TimerBISR2(void)
 {
+    static int j=0;
     switch(TAIV){
     case TA0IV_TACCR1:
+        if(j==0)
+        {
+            CCR1=601;
+            j++;
+            k=0;
+        }
+        else{
         P1OUT&=~BIT4;
         break;
+        }
     case TA0IV_TACCR2:
         P1OUT|=BIT4;
+        CCR1=600;
+        k=1;
+        j--;
         break;
     }
 }
@@ -90,7 +105,7 @@ int main( void )
   //Setting up compare units for each calculated counts
   CCR0 = 628;
   CCTL0 = CCIE;
-  CCR1 = 601;
+  CCR1 = 600;
   CCTL1 = CCIE;
   CCR2 = 605;
   CCTL2=CCIE;
@@ -102,11 +117,17 @@ int main( void )
   TA1CCTL1=CCIE;
   TA1CCR2=387;
   TA1CCTL2=CCIE;
-
+//P2.4 and P2.3 for R
+  P2DIR|=(BIT3+BIT4);
   __bis_SR_register(GIE);
-  while(1){
-
+while(1){
+  while(k==1){
+      P2OUT|=BIT3;
+      P2OUT|=BIT4;
   }
+}
  return 0;
 }
+void endLine(){
 
+}
