@@ -60,8 +60,6 @@ int main( void )
 {
   // Stop watchdog timer to prevent time out reset
   WDTCTL = WDTPW + WDTHOLD;
-  BCSCTL1 = CALBC1_12MHZ;     // set DCO calibration for 16MHz
-  DCOCTL = CALDCO_12MHZ;
 // Set up DCO for sub-main clock calibration
   BCSCTL1 = CALBC1_12MHZ;     // set DCO calibration for 12MHz
   DCOCTL = CALDCO_12MHZ;
