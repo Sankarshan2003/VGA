@@ -60,25 +60,11 @@ int main( void )
 {
   // Stop watchdog timer to prevent time out reset
   WDTCTL = WDTPW + WDTHOLD;
-
-  //Caliberate DCO for 16MHz
-   CSCTL0_H = CSKEY_H;         // unlock CS registers
-   CSCTL1 = DCOFSEL_4;         // set DCO frequency range to 16MHz
-   CSCTL2 = SELA__LFXTCLK | SELS__DCOCLK | SELM__DCOCLK; // set clock sources
-   CSCTL3 = DIVA__1 | DIVS__1 | DIVM__1;                // set clock dividers
-   CSCTL4 &= ~LFXTOFF;         // turn on LFXT crystal oscillator
-      do {
-          CSCTL5 &= ~LFXTOFFG;    // clear LFXT oscillator fault flag
-          SFRIFG1 &= ~OFIFG;      // clear oscillator fault flag
-      } while (SFRIFG1 & OFIFG);  // wait for LFXT oscillator to stabilize
-   CSCTL0_H = 0;               // lock CS registers
-
-      // Set up DCO for sub-main clock calibration
-   CSCTL0_H = CSKEY_H;         // unlock CS registers
-   CSCTL1 = DCOFSEL_3;         // set DCO frequency range to 12MHz
-   CSCTL2 = SELA__LFXTCLK | SELS__DCOCLK | SELM__DCOCLK; // set clock sources
-   CSCTL3 = DIVA__1 | DIVS__1 | DIVM__1;                // set clock dividers
-   CSCTL0_H = 0;
+  BCSCTL1 = CALBC1_12MHZ;     // set DCO calibration for 16MHz
+  DCOCTL = CALDCO_12MHZ;
+// Set up DCO for sub-main clock calibration
+  BCSCTL1 = CALBC1_12MHZ;     // set DCO calibration for 12MHz
+  DCOCTL = CALDCO_12MHZ;
   //Setting up Timer A
   TACTL = TACLR + TASSEL_0 + MC_1 + ID_0+TAIE;
   //Setting up port P1.2 for HSync
@@ -105,9 +91,9 @@ int main( void )
   TA1CTL = TASSEL_2+MC_1+TACLR+ID_0+TAIE;
   TA1CCR0=316;
   TA1CCTL0=CCIE;
-  TA1CCR1=336;
+  TA1CCR1=252;
   TA1CCTL1=CCIE;
-  TA1CCR2=387;
+  TA1CCR2=290;
   TA1CCTL2=CCIE;
 
   __bis_SR_register(GIE);
