@@ -16,6 +16,7 @@
   Timer1A CLK i/p on P3.7
 */
 #include "msp430.h"
+
 //ISRs:
 #pragma vector = TIMER1_A0_VECTOR
 __interrupt void Timer1_TAIFG(void)
@@ -26,13 +27,20 @@ __interrupt void Timer1_TAIFG(void)
 #pragma vector=TIMER1_A1_VECTOR
 __interrupt void Timer1(void)
 {
+    static int i=0;
   switch(TA1IV){
 case TA1IV_TAIFG:
     P1OUT|=BIT3;
     break;
 case TA1IV_TACCR1:
+   if(i==0){
+       CCR1=336;
+       i++;
+   }
+   else{
    P1OUT&=~BIT2;
-
+   i--;
+   }
  break;
  case TA1IV_TACCR2:
    P1OUT|=BIT2;
@@ -90,7 +98,7 @@ int main( void )
   TA1CTL = TASSEL_2+MC_1+TACLR+ID_0+TAIE;
   TA1CCR0=422;
   TA1CCTL0=CCIE;
-  TA1CCR1=336;
+  TA1CCR1=320;
   TA1CCTL1=CCIE;
   TA1CCR2=387;
   TA1CCTL2=CCIE;
